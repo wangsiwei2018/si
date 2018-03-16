@@ -1,4 +1,858 @@
-sajsadjksaha
-hsjahdjada
-sdsdsdfdsfsf
-fdsfsfs
+#include<stdio.h>
+#include<string.h> 
+#include<malloc.h>
+#include<stdlib.h>
+#include<windows.h>
+typedef struct wang
+{
+	char name[10];
+	int xuhao;
+	int jiage;
+	int shuliang;
+	struct wang *next;//指针域
+	
+}WANG;
+WANG *wei(WANG *p);//全局声明尾插函数
+WANG *chaRu(WANG *phead,int n);//插入新节点
+void print(WANG *P1);//输出数据
+void chakan(WANG *phead);//浏览文件的数据
+int cunru(WANG *phead);//把文件中的数据存放到链表中
+void Create(WANG *phead,int n);//创建链表
+void zengjia(WANG *phead);//增加数据
+WANG *tou(WANG *phead);//链表的头插法
+void shanchu(WANG*phead);//删除节点
+void write(WANG *phead);//把数据写入文件
+int jieke(int i,int j);//对输入的数字字符进行判防错误
+int shuju();//对字符串进行限定和判断
+void chaxun(WANG *phead);//查询信息
+void youxuhao(WANG *phead,int xuhao);//通过序号查询
+void youname(WANG *phead,char name[]);//通过名字名字查询
+void xiugai1(WANG *phead);//通过名字修改
+void xiugai2(WANG *phead);//通过序号修改
+void xiugai(WANG *phead);//修改数据的总函数
+int number(char a[]);//判断是否为无数字的字符串
+void guanliyuan(WANG *phead);//管理员界面
+void yonghu(WANG *phead);//用户名界面
+void shaixuanj(WANG *phead);//通过价格筛选
+void shaixuans(WANG *phead);//通过数量筛选
+void shaixuan(WANG *phead); //筛选数据的总函数
+void zuce();//注册用户
+int  panduan(char a[]);//判断用户名是否符合要求
+void mimax(char a[]);//密码写入文件
+void mpan();//密码判断
+void xierum(char a[]);//用户名写入文件
+void jinru();//登陆后界面 
+void denglu();//登陆管理系统
+int bianliwen1(char [][100]);//遍历文件保存用户名
+void bianliwen2(char [][100]);//遍历文件保存密码
+int shouxieyong();//登陆输入用户名
+void shouxiemima(int s);//登陆输入密码                                                  
+int main()//主函数部分 
+{	
+	int t;
+	WANG *phead;
+	phead=(WANG*)malloc(sizeof(WANG));
+	phead->next=NULL;
+	system("color  f5");
+	printf("*********************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@**************\n");
+	printf("请选择您的操作***********1:注册############################2:登陆**************\n");
+	printf("*********************@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@**************\n");
+	printf("亲,如果您乱输入的话我们只判断第一位哦!避免您多次输入\n");
+	t=jieke(1,2);
+	system("cls"); 
+	switch(t)
+	{
+	case 1:system("cls");zuce();break;
+	case 2:system("cls");denglu();break;
+	}
+	return 0;
+}//定义函数部分 
+WANG *wei(WANG *p)//尾插法 
+{
+	WANG *p1;
+	p->next=p1;
+	p1->next=NULL;
+	return p1;
+}
+void print(WANG *p1)
+{
+	while(p1!=NULL)
+	{
+		printf("%9s%18d%20d%26d\n",p1->name,p1->xuhao,p1->jiage,p1->shuliang);
+		p1=p1->next;
+	}
+	return;
+}
+void Create(WANG *phead,int n)
+{
+	int i;
+	WANG *p,*p1;
+	p1=phead;
+	for(i=0;i<n;i++)
+	{
+		p=(WANG*)malloc(sizeof(WANG));
+		p1->next=p;
+		p1=p;
+		p->next=NULL;
+	}
+}
+int cunru(WANG *phead)
+{
+	WANG *p;
+	int i,k=0;
+	FILE *pf;
+	char name[100];
+	p=phead;
+	pf=fopen("商品介绍.txt","r");
+	while(fgets(name,100,pf)!=NULL)
+			k++;
+	Create(p,k);
+	rewind(pf);
+	p=phead->next;
+	for(i=0;i<k;i++)
+	{
+		fscanf(pf,"%9s%18d%20d%26d",p->name,&p->xuhao,&p->jiage,&p->shuliang);
+		p=p->next;
+	}
+	fclose(pf);
+	return k;
+}
+void chakan(WANG *phead)
+{
+	int s=0;
+	s=cunru(phead);
+	printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
+	printf("                         保存的%d个商品的信息:\n",s);
+	printf("  商品名字         商品序号               商品卖价(元)            商品数量(千克)\n");
+	print(phead->next);
+	printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
+}
+void zengjia(WANG *phead)
+{
+	WANG *p=phead;
+	int q,s,t;
+	printf("请选择要添加的位置:\n   1:第一位\n    2:任意位\n    3:最后一位\n");
+	printf("亲,如果您乱输入的话我们只判断第一位哦!避免您多次输入\n");
+	q=jieke(1,3);
+	system("cls");
+	if (q==1)
+	{	
+		chakan(phead);	
+		p=tou(phead);
+		printf("请输入商品的名字\n");
+		scanf("%9s",&p->name);
+		rewind(stdin);
+		printf("请输入商品的序号\n");
+		p->xuhao=shuju();
+		rewind(stdin);
+		printf("请输入商品的价格\n");
+		p->jiage=shuju();
+		rewind(stdin);
+		printf("请输入商品的数量\n");
+		p->shuliang=shuju();
+		rewind(stdin);	
+		write(phead);
+	}
+	else if(q==2)
+	{
+		t=cunru(phead);
+		printf("请输入增加的位置\n");
+		s=jieke(1,t);
+		p=chaRu(phead,s);
+		printf("请输入商品的名字\n");
+		scanf("%s",&p->name);
+		rewind(stdin);
+		printf("请输入商品的序号\n");
+		p->xuhao=shuju();
+		rewind(stdin);
+		printf("请输入商品的价格\n");
+		p->jiage=shuju();
+		rewind(stdin);
+		printf("请输入商品的数量\n");
+		p->shuliang=shuju();
+		rewind(stdin);	
+		write(phead);
+
+	}
+	else
+	{
+		t=cunru(phead);
+		p=chaRu(phead,t);
+		printf("请输入商品的名字\n");
+		scanf("%9s",&p->name);
+		rewind(stdin);
+		printf("请输入商品的序号\n");
+		p->xuhao=shuju();
+		rewind(stdin);
+		printf("请输入商品的价格\n");
+		p->jiage=shuju();
+		rewind(stdin);
+		printf("请输入商品的数量\n");
+		p->shuliang=shuju();
+		rewind(stdin);	
+		write(phead);
+	}	
+}
+WANG *tou(WANG *phead)
+{
+	WANG *p;
+	p=(WANG*)malloc(sizeof(WANG));
+	p->next=phead->next;
+	phead->next=p;
+	return p;
+}
+void shanchu(WANG *phead)
+{
+	
+		int i,k=0,n,t;
+		t=cunru(phead);
+		WANG *pNow = phead->next;
+		WANG*pLast = phead;
+		printf("请输入删除的位置\n");
+		printf("亲,如果您乱输入的话我们只判断第一位哦!避免您多次输入\n");
+		n=jieke(1,t);
+		system("cls");
+		if (n !=t) 
+		{
+			for (i = 1; i < n; i++) 
+			{	
+				pLast = pNow;
+				pNow = pNow->next;
+			}
+		}
+		else {
+			for (i = 1; i < n-1; i++) {
+				pLast = pNow;
+				pNow = pNow->next;
+			}
+		}
+		pLast->next = pNow->next;
+		write(phead);
+
+}
+void  write(WANG *phead)
+{
+	WANG *p;
+	FILE *pf;
+	pf=fopen("商品介绍.txt","w");
+	if(phead->next==NULL)
+	{
+		fprintf(pf,"");
+		return;
+	}
+	p=phead->next;
+	while(p!=NULL)
+	{
+		fprintf(pf,"%9s%18d%20d%26d\n",p->name,p->xuhao,p->jiage,p->shuliang);
+		p=p->next;
+	}
+	fclose(pf);
+
+}
+WANG *chaRu(WANG *phead,int n)
+{
+	int i;
+	WANG *pNow = phead->next;
+	WANG *pLast = phead;
+	WANG *p;
+	for (i = 1; i < n; i++)
+	{
+		pLast = pNow;
+		pNow = pNow->next;
+	}
+	p = (WANG*)malloc(sizeof(WANG));
+	p->next = pNow->next;
+	pLast->next->next=p;
+	return p;
+}
+int jieke(int i,int j)                      //对每一次数据的输入进行限制，防止乱输入 
+{
+	int si,k=1,y,lena;
+	char a[100000];
+	char s;
+	while(k<=3)
+	{
+		rewind(stdin); 
+		s=getchar();
+		rewind(stdin);
+		if(s>='1'&&s<='9')
+			si=s-'0';
+		else
+		{
+			printf("输入错误,请再次输入,您还有%d次机会\n",3-k);
+			k++;
+			continue;
+		}
+		if(si<i||si>j)
+		{
+			printf("输入错误,请再次输入,您还有%d次机会\n",3-k);
+			k++;
+		}
+		
+		else
+			return si;
+	}
+	s=getchar();
+	rewind(stdin);
+	if(s>='1'&&s<='9')
+		si=s-'0';
+	else
+	{
+		printf("感谢使用本系统\n");
+		exit(0);
+	}
+	if(si<i||si>j)
+	{
+		printf("感谢使用本系统\n");
+		exit(0);
+	}
+	else
+		return si;
+}
+void chaxun(WANG *phead)
+{
+	int si;
+	int xuhao=0;
+	char name[10];
+	printf("请输入通过的查询方式       1:商品的序号查询     2:商品的名字查询\n");
+	printf("亲,如果您乱输入的话我们只判断第一位哦!避免您多次输入\n");
+	si=jieke(1,2);
+	system("cls");
+	if(si==1)
+	{
+		printf("请输入商品的序号\n");
+		xuhao=shuju();
+		youxuhao(phead,xuhao);
+	}
+	else
+	{
+		printf("请输入商品的名字\n");
+		scanf("%9s",name);
+		youname(phead,name);
+
+	}
+}
+void youxuhao(WANG *phead,int xuhao)
+{
+	WANG *p;
+	p=phead->next;
+	while(p!=NULL)
+	{
+		if(p->xuhao==xuhao)
+		{
+					
+			printf("////////////////////////////////////////////////////////////////////////////////\n");
+			printf("                         亲,信息查到了,如下!!!\n");
+			printf("  商品名字         商品序号               商品卖价(元)            商品数量(千克)\n");
+			printf("%9s%18d%20d%26d\n",p->name,p->xuhao,p->jiage,p->shuliang);
+			break;
+		}
+			p=p->next;
+	}
+	if(p==NULL)
+		printf("           亲,未查到该商品的信息\n");
+}
+void youname(WANG *phead,char name[])
+{
+	WANG *p;
+	p=phead->next;
+	while(p!=NULL)
+	{
+		if(strcmp(p->name,name)==0)
+		{
+			
+			printf("////////////////////////////////////////////////////////////////////////////////\n");
+			printf("                         亲,信息查到了,如下!!!\n");
+			printf("  商品名字         商品序号               商品卖价(元)            商品数量(千克)\n");
+			printf("%9s%18d%20d%26d\n",p->name,p->xuhao,p->jiage,p->shuliang);
+			break;
+		}		
+				p=p->next;
+				
+	}
+			if(p==NULL)
+			printf("           亲,未查到该商品的信息!!!!!!!!!\n");
+}
+void xiugai1(WANG *phead)
+{
+	WANG *p;
+	int si;
+	int s=10;
+	char name[10];
+	p=phead->next;
+	printf("请输入要修改商品的名字(若输入商品的名字遍历文件数据中没有就直接跳过)\n");
+	scanf("%9s",name);
+	while(p!=NULL)
+	{
+		if(strcmp(p->name,name)==0)
+		{
+				
+			printf("请选择修改的项目      1:名字      2:序号      3:价格      4:数量\n");
+			printf("亲,如果您乱输入的话我们只判断第一位哦!避免您多次输入\n");
+			si=jieke(1,4);
+			if(si==1)
+			{
+			printf("请输入修改商品的名字\n");
+			scanf("%9s",&p->name);
+			rewind(stdin);
+			}
+			if(si==2)
+			{
+			printf("请输入商品的序号\n");
+			p->xuhao=shuju();
+			rewind(stdin);
+			}
+			if(si==3)
+			{
+			printf("请输入商品的价格\n");
+			p->jiage=shuju();
+			rewind(stdin);
+			}
+			if(si==4)
+			{
+			printf("请输入商品的数量\n");
+			p->shuliang=shuju();
+			rewind(stdin);
+			}
+			write(phead);
+		}
+		p=p->next;
+	}
+}	
+void xiugai2(WANG *phead)
+{
+	WANG *p;
+	int xuhao;
+	int si;
+	p=phead->next;
+	printf("请输入要修改商品的序号（若输入商品的序号遍历文件数据中没有就直接跳过）\n");
+	xuhao=shuju();
+	while(p!=NULL)
+	{
+		if(p->xuhao==xuhao)
+		{
+			
+			printf("请选择修改的项目      1:名字      2:序号      3:价格      4:数量\n");
+			printf("亲,如果您乱输入的话我们只判断第一位哦!避免您多次输入\n");
+			si=jieke(1,4);
+			if(si==1)
+			{
+				printf("请输入修改商品的名字\n");
+				scanf("%9s",&p->name);
+				rewind(stdin);
+			}
+			if(si==2)
+			{
+				printf("请输入商品的序号\n");
+				p->xuhao=shuju();
+				rewind(stdin);
+			}
+			if(si==3)
+			{
+				printf("请输入商品的价格\n");
+				p->jiage=shuju();
+				rewind(stdin);
+			}
+			if(si==4)
+			{
+				printf("请输入商品的数量\n");
+				p->shuliang=shuju();
+				rewind(stdin);
+			}
+			write(phead);
+		}
+		p=p->next;
+	}
+}	
+void xiugai(WANG *phead)
+{
+	WANG *p;
+	int si;
+	printf("请输入要查询的方式并修改      1:名字      2:序号\n");
+	printf("亲,如果您乱输入的话我们只判断第一位哦!避免您多次输入\n");
+	si=jieke(1,2);
+	system("cls");
+	if(si==1)
+		xiugai1(phead);
+	else
+		xiugai2(phead);
+
+} 
+int number(char a[])
+{
+	int lena,i;
+	lena=strlen(a);
+	for(i=0;i<lena;i++)
+		if(a[i]<'0'||a[i]>'9')
+			return 0;
+		return 1;
+}
+int shuju()                    //把非整型的数据转化为整型 
+{
+	int k=0,i,lena,wei=0;
+	int s=10;
+	char a[1000];
+	while(k<=3)
+	{
+		gets(a);
+		lena=strlen(a);
+		if(number(a)&&lena<=s)
+		{
+			for(i=0;i<lena;i++)
+				wei=wei*10+a[i]-48;
+			return wei;
+		}
+		else
+		{
+			printf("输入错误,请重新输入,您还剩%d次机会\n",3-k);
+			k++;
+
+		}
+	}
+	gets(a);
+		lena=strlen(a);
+		if(number(a)&&lena<=s)
+		{
+			for(i=0;i<lena;i++)
+				wei=wei*10+a[i]-48;
+			return wei;
+		}
+	else
+	{
+		printf("机会用光,感谢使用本系统\n");
+		exit(0);
+	}
+}
+void guanliyuan(WANG *phead)               //管理员的页面 
+{
+	int h;
+	while(1){
+	printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
+	printf("请选择您需要的服务和需要了解的信息\n");
+	printf("1:商品查找2:商品修改3:商品增加4:商品删除5:商品浏览6:退出系统7:商品筛选\n");
+	printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
+	chakan(phead);
+	printf("请输入查找序号\n");
+	printf("亲,如果您乱输入的话我们只判断第一位哦!避免您多次输入\n");
+	h=jieke(1,7);
+	system("cls");
+	switch(h)
+	{
+	case 1:system("cls");chaxun(phead);break;
+	case 2:system("cls");xiugai(phead);break;
+	case 3:system("cls");zengjia(phead);break;
+	case 4:system("cls");shanchu(phead);break;	
+	case 5:system("cls");chakan(phead);break;
+	case 6:system("cls");printf("谢谢本次使用本系统,退出\n");exit(0);
+	case 7:system("cls");shaixuan(phead);break;
+	}
+	}
+}
+void yonghu(WANG *phead)        //用户界面 
+{
+		int s;
+		while(1)
+		{
+		printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+		printf("用户您好,请选择你要的帮助\n");
+		printf("1:商品浏览     2:商品查询    3:商品筛选    4:退出系统\n");
+		printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+		chakan(phead);
+		printf("请输入查找序号\n");
+		printf("亲,如果您乱输入的话我们只判断第一位哦!避免您多次输入\n");
+		s=jieke(1,4);
+		system("cls");
+		switch(s)
+		{
+		case 1:system("cls");chakan(phead);break;
+		case 2:system("cls");chaxun(phead);break;
+		case 3:system("cls");shaixuan(phead);break;
+		case 4:printf("感谢使用本系统");exit (0);
+		}
+		}
+}
+void shaixuanj(WANG *phead)
+{
+	int jiage,k=0;
+	WANG *p;
+	printf("请输入要筛选的价格\n");
+	jiage=shuju();
+	p=phead->next;
+	while(p!=NULL)
+	{
+		
+		if(p->jiage>=jiage)
+		{
+			printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+			printf("                         亲,满足条件的商品!!!\n");
+			k++;
+			printf("  商品名字         商品序号               商品卖价(元)            商品数量(千克)\n");
+			printf("%9s%18d%20d%26d\n",p->name,p->xuhao,p->jiage,p->shuliang);
+		}
+		p=p->next;
+	}
+	if(k==0)
+		printf("亲,此筛选范围不符合\n");
+}
+void shaixuans(WANG *phead)
+{
+
+	int shuliang,k=0;
+	WANG *p;
+	printf("请输入要筛选的数量\n");
+	shuliang=shuju();
+	p=phead->next;
+	while(p!=NULL)
+	{
+	
+		if(p->shuliang>=shuliang)
+		{
+			printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+			printf("                         亲,满足条件的商品!!!\n");
+			k++;
+			printf("  商品名字         商品序号               商品卖价(元)            商品数量(千克)\n");
+			printf("%9s%18d%20d%26d\n",p->name,p->xuhao,p->jiage,p->shuliang);
+		}
+		p=p->next;
+	}
+	if(k==0)
+	printf("亲,此筛选范围不符合\n");
+}
+void shaixuan(WANG *phead)                    //筛选的方式选择 
+{
+	int si;
+	printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n");
+	printf("请选择筛选方式   1:用价格筛选(大于等于某个价格)    2:用数量筛选(大于等于某个数量值)\n");
+	si=jieke(1,2);
+	system("cls");
+	if(si==1)
+		shaixuanj(phead);
+	else
+		shaixuans(phead);
+}
+void zuce()
+{	
+	char a[100];
+	int k=0,lena,j,s=12,i,t;
+	char b[100][100];
+	printf("请输入注册的用户名(位数不可以超过12位字母构成)\n");
+	while(k<=2)
+	{
+		t=bianliwen1(b);                       //返回文件中的用户名用来下面的循环判断是否此用户名已经被注册 
+		gets(a);
+		lena=strlen(a);
+		if(panduan(a)&&lena<=s)
+		{
+			for(i=0;i<=t;i++)
+			{
+				if(strcmp(b[i],a)==0)
+			{
+				printf("该用户名已经被拥有,您不能夺人所爱哦\n");
+				exit(0);
+			}
+			}
+			xierum(a);
+			printf("用户名完成,请输入密码(位数不可以超过12位)\n");
+			mpan();
+		}
+		else
+		{
+			
+			printf("输入错误,请再次输入,剩余机会%d次\n",2-k);
+			k++;
+		}
+	}
+		gets(a);
+		lena=strlen(a);
+		if(panduan(a)&&lena<=s)
+		{
+			xierum(a);
+			printf("用户名完成,请输入密码(位数不可以超过12位)\n");
+			mpan();
+		}
+		else
+		{
+			printf("机会用光,注册失败\n");
+			exit(0);
+		}
+
+}
+int panduan(char a[])                         //判断用户名是否符合我的要求 
+{
+	int i,lena;
+	lena=strlen(a);
+	for(i=0;i<lena;i++)
+		if(a[i]<'a'||a[i]>'z')
+			return 0;
+		return 1;
+}	
+void xierum(char a[])
+{
+	FILE *pf;
+	pf=fopen("用户名.txt","a");
+	fprintf(pf,"%s\n",a);
+	fclose(pf);
+}
+void mpan()
+{
+	int lena,k=0;
+	char a[1000];
+	
+	while(k<=2)
+	{
+		gets(a);
+		lena=strlen(a);
+		if(lena<=12)
+		{
+			mimax(a);
+			printf("注册成功,恭喜您\n");
+				printf("请重新登录\n");
+				denglu();
+		}	
+		else
+		{
+			
+			printf("输入错误,请重新输入,剩余机会%d次\n",2-k);
+			k++;
+		}
+	}
+	gets(a);
+	if(lena<=12)
+	{
+		mimax(a);
+		printf("注册成功,恭喜您\n");
+		printf("请重新登录\n");
+		denglu();
+}
+	else
+	{
+		printf("机会用光,注册失败\n");
+		exit(0);
+	}
+}
+void mimax(char a[])
+{
+
+	FILE *pf;
+	pf=fopen("密码.txt","a");
+	fprintf(pf,"%s\n",a);
+	fclose(pf);
+}
+void jinru()                              //登陆成功后的界面 
+{
+	system("cls");
+	int t;
+	WANG *phead;
+	phead=(WANG*)malloc(sizeof(WANG));
+	phead->next=NULL;
+	printf("*************——————————————————————————**************\n");
+	printf("                           欢迎来到杰克水果商品管理系统!!!!                     \n");
+	printf("*************——————————————————————————**************\n");
+	printf("请选择您的身份                1:管理员         2:用户\n");
+	printf("亲,如果您乱输入的话我们只判断第一位哦!避免您多次输入\n");
+	t=jieke(1,2);
+	switch(t)
+	{
+	case 1:system("cls");guanliyuan(phead);
+	case 2:system("cls");yonghu(phead);
+	}
+}
+int bianliwen1(char a[][100])                              //把文件中用户名的数据存到数组中便于查找比较 
+{
+	FILE *pf;
+	int d=0,i;
+	pf=fopen("用户名.txt","r");
+	while(fgets(a[d],10000,pf)!=NULL)
+		d++;
+	rewind(pf);
+	for(i=0;i<=d;i++)
+		fscanf(pf,"%s",a[i]);
+		fclose(pf);
+	return d;
+}
+void bianliwen2(char a[][100])                     //把文件中的密码存入到数组中便于比较和查找 
+{
+
+	FILE *pf;
+	int d=0,i;
+	pf=fopen("密码.txt","r");
+	while(fgets(a[d],10000,pf)!=NULL)                        //遍历文件来计算文件数据的行数 
+		d++;
+	rewind(pf);
+	for(i=0;i<=d;i++)
+		fscanf(pf,"%s",a[i]);
+		fclose(pf);
+}
+int shouxieyong()                    //用户名输入并且记录用户名所在文件中的行数要求返回 
+{
+	char a[100];
+	int k=0,lena,j=1,s=12,t,i;
+	char b[100][100]; 
+	printf("请输入用户名(位数不可以超过12位字母构成,如果用户名不存在无法登陆)\n");
+		scanf("%s",a);
+		lena=strlen(a);
+		if(panduan(a)&&lena<=s)
+		{
+			t=bianliwen1(b);
+			for(i=0;i<=t;i++)
+			{
+				if(strcmp(b[i],a)==0)
+				{
+					printf("用户名正确\n");
+					return i;
+					break;
+				}
+				
+				
+			}
+			
+			
+					printf("此用户不存在,退出");
+					exit(0);
+			
+			
+		}
+		else
+		{
+	
+					printf("输入有误,退出");
+					exit(0);
+		}	
+	
+}
+void shouxiemima(int s)                //密码输入 
+{
+	int lena,k=0;
+	char a[1000];
+	char b[100][100];
+	printf("请输入密码\n");
+		scanf("%s",a);
+		lena=strlen(a);
+		if(lena<=12)
+		{
+			bianliwen2(b);
+			if(strcmp(b[s],a)==0)
+			{
+		
+			printf("登陆成功,恭喜您\n");
+			jinru();
+		}
+			else
+			{
+				printf("密码错误,放弃登陆吧");
+				exit(0);
+			}
+		}
+	
+		else
+		{
+			printf("输入有误,退出");
+			exit(0);
+		}
+}
+void denglu()
+{
+	int t;
+	t=shouxieyong();
+	shouxiemima(t);
+}
