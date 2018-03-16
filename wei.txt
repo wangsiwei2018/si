@@ -1,3 +1,4 @@
+ÍõË¼Î°¹ş¹ş¹ş
 #include<stdio.h>
 #include<string.h> 
 #include<malloc.h>
